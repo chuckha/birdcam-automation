@@ -1,0 +1,14 @@
+# Credentials
+.env
+token.json
+client_secret.json
+
+# Go
+stream-manager
+
+# Python
+__pycache__/
+*.pyc
+
+# Data
+*.mp4
