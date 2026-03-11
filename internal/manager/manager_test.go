@@ -43,9 +43,9 @@ type downloaderCall struct {
 	dest        string
 }
 
-func (f *fakeDownloader) Download(_ context.Context, broadcastID string, dest string) error {
+func (f *fakeDownloader) Download(_ context.Context, broadcastID string, dest string) (string, error) {
 	f.calls = append(f.calls, downloaderCall{broadcastID: broadcastID, dest: dest})
-	return nil
+	return dest, nil
 }
 
 type fakeProcessor struct {

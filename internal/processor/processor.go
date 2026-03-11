@@ -14,11 +14,12 @@ import (
 var ErrNoBirds = errors.New("no bird activity detected")
 
 type Processor struct {
+	pythonPath string
 	scriptPath string
 }
 
-func New(scriptPath string) *Processor {
-	return &Processor{scriptPath: scriptPath}
+func New(pythonPath, scriptPath string) *Processor {
+	return &Processor{pythonPath: pythonPath, scriptPath: scriptPath}
 }
 
 // Highlights runs detect_birds.py on the day and night video files,
@@ -60,8 +61,14 @@ func (p *Processor) Highlights(ctx context.Context, dayFile, nightFile, outFile 
 	return p.concat(ctx, outFile, inputs)
 }
 
+// ProcessSingle runs bird detection on a single video file and writes
+// the highlights to outFile. Returns ErrNoBirds if no activity is found.
+func (p *Processor) ProcessSingle(ctx context.Context, videoFile, outFile string) error {
+	return p.runDetect(ctx, videoFile, outFile)
+}
+
 func (p *Processor) runDetect(ctx context.Context, videoFile, outFile string) error {
-	cmd := exec.CommandContext(ctx, "python3", p.scriptPath, videoFile, outFile)
+	cmd := exec.CommandContext(ctx, p.pythonPath, p.scriptPath, videoFile, outFile)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		var exitErr *exec.ExitError
@@ -95,5 +102,5 @@ func (p *Processor) concat(ctx context.Context, outFile string, inputs []string)
 
 // BuildDetectArgs returns the command arguments for a single detect_birds.py run.
 func (p *Processor) BuildDetectArgs(videoFile, outFile string) []string {
-	return []string{"python3", p.scriptPath, videoFile, outFile}
+	return []string{p.pythonPath, p.scriptPath, videoFile, outFile}
 }

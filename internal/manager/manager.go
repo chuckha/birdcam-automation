@@ -18,7 +18,7 @@ type Broadcaster interface {
 }
 
 type Downloader interface {
-	Download(ctx context.Context, broadcastID string, dest string) error
+	Download(ctx context.Context, broadcastID string, dest string) (string, error)
 }
 
 type Processor interface {
@@ -154,7 +154,7 @@ func (m *Manager) handleSunset(ctx context.Context, ev event.Event) error {
 func (m *Manager) startDownload(ctx context.Context, broadcastID, logicalDay, typ string) {
 	dest := filepath.Join(m.dataDir, fmt.Sprintf("%s_%s.mp4", logicalDay, typ))
 	go func() {
-		err := m.downloader.Download(ctx, broadcastID, dest)
+		actualPath, err := m.downloader.Download(ctx, broadcastID, dest)
 		if err != nil {
 			log.Printf("download failed for %s %s: %v", typ, broadcastID, err)
 			return
@@ -164,7 +164,7 @@ func (m *Manager) startDownload(ctx context.Context, broadcastID, logicalDay, ty
 			Time: time.Now(),
 			Payload: map[string]string{
 				"broadcast_id": broadcastID,
-				"file_path":    dest,
+				"file_path":    actualPath,
 				"logical_day":  logicalDay,
 				"type":         typ,
 			},

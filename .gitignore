@@ -1,10 +1,17 @@
 # Credentials
 .env
+.env*
+!.env.example
 token.json
 client_secret.json
 
-# Go
-stream-manager
+# Go binaries
+/stream-manager
+/backfill
+/login
+
+# Python venv
+venv/
 
 # Python
 __pycache__/

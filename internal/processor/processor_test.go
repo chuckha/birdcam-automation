@@ -5,7 +5,7 @@ import (
 )
 
 func TestProcessor_BuildDetectArgs(t *testing.T) {
-	p := New("/opt/detect_birds.py")
+	p := New("python3", "/opt/detect_birds.py")
 	args := p.BuildDetectArgs("/data/day.mp4", "/data/day_highlights.mp4")
 
 	expected := []string{"python3", "/opt/detect_birds.py", "/data/day.mp4", "/data/day_highlights.mp4"}

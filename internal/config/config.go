@@ -8,14 +8,16 @@ import (
 )
 
 type Config struct {
-	Latitude         float64
-	Longitude        float64
-	YouTubeStreamKey string
-	OAuthTokenFile   string
-	DataDir          string
-	HighlightsScript string
-	YtdlpPath       string
-	TimeZone         *time.Location
+	Latitude              float64
+	Longitude             float64
+	YouTubeStreamKey      string
+	OAuthClientSecretFile string
+	OAuthTokenFile        string
+	DataDir               string
+	PythonPath            string
+	HighlightsScript      string
+	YtdlpPath             string
+	TimeZone              *time.Location
 }
 
 func Load() (Config, error) {
@@ -31,11 +33,16 @@ func Load() (Config, error) {
 	if err != nil {
 		return Config{}, err
 	}
+	clientSecretFile, err := required("OAUTH_CLIENT_SECRET_FILE")
+	if err != nil {
+		return Config{}, err
+	}
 	oauthFile, err := required("OAUTH_TOKEN_FILE")
 	if err != nil {
 		return Config{}, err
 	}
 	dataDir := withDefault("DATA_DIR", "/data")
+	pythonPath := withDefault("PYTHON_PATH", "python3")
 	highlightsScript := withDefault("HIGHLIGHTS_SCRIPT", "detect_birds.py")
 	ytdlpPath := withDefault("YTDLP_PATH", "yt-dlp")
 	tzName := withDefault("TIMEZONE", "UTC")
@@ -46,12 +53,14 @@ func Load() (Config, error) {
 	}
 
 	return Config{
-		Latitude:         lat,
-		Longitude:        lon,
-		YouTubeStreamKey: streamKey,
-		OAuthTokenFile:   oauthFile,
-		DataDir:          dataDir,
-		HighlightsScript: highlightsScript,
+		Latitude:              lat,
+		Longitude:             lon,
+		YouTubeStreamKey:      streamKey,
+		OAuthClientSecretFile: clientSecretFile,
+		OAuthTokenFile:        oauthFile,
+		DataDir:               dataDir,
+		PythonPath:            pythonPath,
+		HighlightsScript:      highlightsScript,
 		YtdlpPath:        ytdlpPath,
 		TimeZone:         loc,
 	}, nil

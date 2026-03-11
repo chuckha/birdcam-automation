@@ -2,13 +2,11 @@ package uploader
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"time"
 
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	yt "google.golang.org/api/youtube/v3"
 )
 
@@ -16,27 +14,11 @@ type Uploader struct {
 	service *yt.Service
 }
 
-func New(ctx context.Context, oauthTokenFile string) (*Uploader, error) {
-	tokenData, err := os.ReadFile(oauthTokenFile)
-	if err != nil {
-		return nil, fmt.Errorf("reading oauth token file: %w", err)
-	}
-
-	var token oauth2.Token
-	if err := json.Unmarshal(tokenData, &token); err != nil {
-		return nil, fmt.Errorf("parsing oauth token: %w", err)
-	}
-
-	config := &oauth2.Config{
-		Endpoint: google.Endpoint,
-	}
-	client := config.Client(ctx, &token)
-
-	service, err := yt.New(client)
+func New(httpClient *http.Client) (*Uploader, error) {
+	service, err := yt.New(httpClient)
 	if err != nil {
 		return nil, fmt.Errorf("creating youtube service: %w", err)
 	}
-
 	return &Uploader{service: service}, nil
 }
 
