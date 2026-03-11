@@ -17,6 +17,7 @@ type Config struct {
 	PythonPath            string
 	HighlightsScript      string
 	YtdlpPath             string
+	PlaylistID            string
 	TimeZone              *time.Location
 }
 
@@ -45,6 +46,7 @@ func Load() (Config, error) {
 	pythonPath := withDefault("PYTHON_PATH", "python3")
 	highlightsScript := withDefault("HIGHLIGHTS_SCRIPT", "detect_birds.py")
 	ytdlpPath := withDefault("YTDLP_PATH", "yt-dlp")
+	playlistID := os.Getenv("YOUTUBE_PLAYLIST_ID")
 	tzName := withDefault("TIMEZONE", "UTC")
 
 	loc, err := time.LoadLocation(tzName)
@@ -62,6 +64,7 @@ func Load() (Config, error) {
 		PythonPath:            pythonPath,
 		HighlightsScript:      highlightsScript,
 		YtdlpPath:        ytdlpPath,
+		PlaylistID:       playlistID,
 		TimeZone:         loc,
 	}, nil
 }

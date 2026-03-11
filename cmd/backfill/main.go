@@ -51,6 +51,7 @@ func main() {
 	pythonPath := envDefault("PYTHON_PATH", "python3")
 	highlightsScript := envDefault("HIGHLIGHTS_SCRIPT", "detect_birds.py")
 	ytdlpPath := envDefault("YTDLP_PATH", "yt-dlp")
+	playlistID := os.Getenv("YOUTUBE_PLAYLIST_ID")
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
@@ -95,7 +96,7 @@ func main() {
 
 	dl := downloader.New(ytdlpPath)
 	proc := processor.New(pythonPath, highlightsScript)
-	up, err := uploader.New(httpClient)
+	up, err := uploader.New(httpClient, playlistID)
 	if err != nil {
 		log.Fatalf("creating uploader: %v", err)
 	}

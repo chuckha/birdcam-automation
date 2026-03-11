@@ -43,7 +43,7 @@ func main() {
 		log.Fatalf("creating youtube client: %v", err)
 	}
 
-	up, err := uploader.New(httpClient)
+	up, err := uploader.New(httpClient, cfg.PlaylistID)
 	if err != nil {
 		log.Fatalf("creating uploader: %v", err)
 	}
