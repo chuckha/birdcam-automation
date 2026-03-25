@@ -22,9 +22,11 @@ import (
 func main() {
 	var fromStr, toStr string
 	var dryRun bool
+	var uploadOnly string
 	flag.StringVar(&fromStr, "from", "", "start date (YYYY-MM-DD, required)")
 	flag.StringVar(&toStr, "to", "", "end date inclusive (YYYY-MM-DD, required)")
 	flag.BoolVar(&dryRun, "dry-run", false, "list what would be done without executing")
+	flag.StringVar(&uploadOnly, "upload-only", "", "upload an existing highlights file (path) for the --from date, skip download/process")
 	flag.Parse()
 
 	if fromStr == "" || toStr == "" {
@@ -105,6 +107,18 @@ func main() {
 	now := time.Now().UTC()
 	nextPublish := time.Date(now.Year(), now.Month(), now.Day()+1, 8, 0, 0, 0, time.UTC)
 	publishIndex := 0
+
+	if uploadOnly != "" {
+		date := from.Format("2006-01-02")
+		title := "Birdcam Highlights " + date
+		publishAt := nextPublish
+		videoID, err := up.Upload(ctx, uploadOnly, title, publishAt)
+		if err != nil {
+			log.Fatalf("%s: uploading: %v", date, err)
+		}
+		log.Printf("%s: uploaded as %s (publishes %s)", date, videoID, publishAt.Format(time.RFC3339))
+		return
+	}
 
 	for d := from; !d.After(to); d = d.AddDate(0, 0, 1) {
 		date := d.Format("2006-01-02")
